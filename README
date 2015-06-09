@@ -1,0 +1,72 @@
+NetTrafD README
+===============
+
+What is NetTrafD?
+-----------------
+NetTrafD is a daemon that waits for client connections on the TCP port 4664, and then sends information about a network interface of the machine the daemon is running.
+
+Using a client application, such as NetTraf for Windows, supplied on this package, you can monitor the status of your network interface (mainly dial-up interfaces, such as ppp), so you know when data is being sent or received, or when you are connected to the Internet or not.
+
+I use a Linux masquerade server, so everyone can use the same phone line to access the Internet, but I never know when the connection is active or not or how well the connection is performing, so I use this program for this purpose.
+
+Compiling
+---------
+
+Just type make on the top level directory.
+The nettrafd program will stay on the "src" directory.
+To install the program on /usr/sbin, and the init script on /etc/rc.d/init.d, type "make install".
+
+Usage
+-----
+Just execute nettrafd binary. If you want nettrafd to run as a daemon (in background), use the -D parameter.
+
+Then use a client application that connects to the server, and wait for the results!
+
+Protocol
+--------
+NetTrafD uses a VERY crude protocol. You can send 4 commands to the server:
+- ITF <interface name>
+    sets the interface to check every 1 second. The interface name should be the name you use on the ifconfig command, such as eth0 or ppp0.
+- NITF <interface name>
+    same as ITF, but sends the data using the NDATA keyword, and only sends the changes on the current second.
+- QUIT
+    disconnects.
+- DIE
+    disconnects and kill the server.
+- PASS <password>
+    this is the first command that should be sent to the NetTrafD
+
+NetTrafD will send only 5 commands:
+- DATA <recvdata> <sentdata>
+    the data received on the interface so far. On the 2.2 kernels, this will be the amount of bytes received on this interface. On the 2.0 kernels, this will be the number of packets received on this interface.
+- NDATA <recvdelta> <sentdelta>
+    if on NITF mode, sends the data received on the previous second. The same rules applied on the DATA command will apply to this one.
+- ERROR
+    error on the name of the interface passed by the ITF command.
+- IPADDR
+    current ip-address of the selected interface.
+- PASS <status>
+    Status could be OK, NEED and BAD
+    The default Password is: "nettraf" it should be changed before you compile NetTrafD. Simple change the value of "NTD_PASSWORD" in the ./src/connection.c to a password you like.
+
+Thanks
+------
+- Mattias Wadman <napolium@sudac.org>
+   I borrowed the code to fetch interface status from his ifled-0.6 program.
+
+- Unix Programming Frequently Asked Questions <http://www.whitefang.com/unix/faq_toc.html>
+   I couldn't figure out who wrote it, but I've borrowed the daemon initialization code from it.
+
+Author Offical NetTrafD
+------
+Rangel Reale
+rangel.reale@yahoo.com
+http://www.geocities.com/CapeCanaveral/2064/nettraf.html
+Brazil
+Author Inoffical NetTrafD
+------
+Smurfy
+nettraf@smurfy.de
+Changed some things in Nettrafd and the GUI
+
+

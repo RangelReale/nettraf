@@ -1,0 +1,48 @@
+#! /bin/sh
+#
+# nettraf       Starts the nettrafd daemon
+#
+# Author:       Rangel Reale (rangel.reale@yahoo.com)
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Get config.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+if [ ${NETWORKING} = "no" ]
+then
+	exit 0
+fi
+
+[ -f /usr/sbin/nettrafd ] || exit 0
+
+# See how we were called.
+case "$1" in
+  start)
+	echo -n "Starting nettrafd: "
+	/usr/sbin/nettrafd -D
+
+	echo
+	;;
+  stop)
+	echo -n "Stopping nettrafd: "
+	killproc nettrafd
+
+	echo
+	;;
+  status)
+	status killproc
+	;;
+  restart|reload)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: nettraf {start|stop|status|restart|reload}"
+	exit 1
+esac
+
+exit 0
